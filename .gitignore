@@ -1,0 +1,9 @@
+*~
+*.bak
+*.diff
+node_modules/
+package-lock.json
+lib/
+coverage/
+.nyc_output/
+htmlnorm.test.html

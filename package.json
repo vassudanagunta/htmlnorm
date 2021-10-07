@@ -1,0 +1,75 @@
+{
+    "name": "htmlnorm",
+    "version": "0.1.0",
+    "description": "Safely normalize HTML for testing, semantic diffs and readability.",
+    "homepage": "https://github.com/vassudanagunta/htmlnorm#readme",
+    "keywords": [
+        "html",
+        "format",
+        "fmt",
+        "normalize",
+        "canonical",
+        "canonicalize",
+        "clean",
+        "pretty",
+        "prettify",
+        "pretty-print",
+        "beautify",
+        "tidy",
+        "whitespace",
+        "indentation"
+    ],
+    "author": "Vas Sudanagunta <vas@commonkarma.org>",
+    "license": "MIT",
+    "repository": "github:vassudanagunta/htmlnorm",
+    "bugs": "https://github.com/vassudanagunta/htmlnorm/issues",
+
+    "type": "module",
+    "main": "lib/htmlnorm.js",
+    "bin": "cli.js",
+    "files": [
+        "README.md",
+        "LICENSE",
+        "CHANGELOG.md",
+        "lib",
+        "src",
+        "cli.js",
+        "!**/*.tsbuildinfo"
+    ],
+
+    "scripts": {
+        "build": "tsc -p src",
+        "pretest": "npm run build && npm run lint",
+        "test": "npx mocha",
+        "lint": "npx eslint .",
+        "coverage": "npm run nyc && npm run c8",
+        "nyc": "npx nyc mocha --experimental-loader=@istanbuljs/esm-loader-hook",
+        "c8": "npx c8 npm test",
+        "c8:report": "npx c8 --reporter html-spa report && open coverage/index.html",
+        "prepublishOnly": "npm test"
+    },
+
+    "dependencies": {
+        "htmlparser2": "^7.1.2"
+    },
+    "devDependencies": {
+        "@istanbuljs/esm-loader-hook": "^0.1.2",
+        "@types/chai": "^4.2.22",
+        "@types/mocha": "^9.0.0",
+        "@typescript-eslint/eslint-plugin": "^4.31.2",
+        "@typescript-eslint/parser": "^4.31.2",
+        "c8": "^7.9.0",
+        "chai": "^4.3.4",
+        "eslint": "^7.32.0",
+        "eslint-plugin-babel": "^5.3.1",
+        "eslint-plugin-import": "^2.24.2",
+        "mocha": "^9.1.2",
+        "mocha-suppress-logs": "^0.3.1",
+        "nyc": "^15.1.0",
+        "source-map-support": "^0.5.20",
+        "typescript": "^4.4.3"
+    },
+    "engines": {
+        "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
+    }
+}

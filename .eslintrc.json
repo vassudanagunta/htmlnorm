@@ -1,0 +1,37 @@
+{
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+        "@typescript-eslint"
+    ],
+    "env": {
+        "browser": false,
+        "node": true,
+        "mocha": true
+    },
+    "parserOptions": {
+        "ecmaVersion": 2018,
+        "sourceType": "module"
+    },
+    "ignorePatterns": ["node_modules", "lib"],
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended"
+    ],
+    "rules": {
+        "no-constant-condition": 0,
+        "no-underscore-dangle": 0,
+        "camelcase": 0,
+        "quotes": 0,
+        "no-process-exit": 0,
+        "no-empty": 0,
+        "new-cap": [
+            2, {
+                "newIsCap": true,
+                "capIsNew": true,
+                "newIsCapExceptions": [],
+                "capIsNewExceptions": []
+            }
+        ]
+    }
+}

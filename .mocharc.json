@@ -1,0 +1,8 @@
+{
+    "ui": "tdd",
+    "spec": "src/*.test.js",
+    "enable-source-maps": true,
+    "require": "mocha-suppress-logs",
+    "bail": false,
+    "inline-diffs": true
+}
