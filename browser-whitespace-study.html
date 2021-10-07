@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Study of how browsers collapse whitespace.</title>
+    <style>
+        body {
+            max-width: 35em;
+        }
+
+        code {
+            background-color: lightgray;
+        }
+
+        .example {
+            background-color: lightsteelblue;
+            margin: 10px 10px;
+        }
+
+        table {
+            border: 1px solid #000;
+            border-collapse: collapse;
+        }
+        table td {
+            text-align: center;
+            padding: 3px 6px;
+        }
+
+        .code-block {
+            text-align: left;
+            white-space: pre;
+            font-family: monospace;
+        }
+        .big-left {
+            font-size: 25px;
+            text-align: left;
+        }
+
+        .alternating {
+            display: inline-block;
+        }
+        .alternating b {
+            color: white;
+        }
+        .alternating b:nth-child(odd) {
+            background: blue;
+        }
+        .alternating b:nth-child(even) {
+            background: red;
+        }
+
+        .as-inline-block b {
+            display: inline-block;
+        }
+
+        .as-quote b::before {
+            content: open-quote;
+        }
+        .as-quote b::after {
+           content: close-quote;
+        }
+
+        .as-block b {
+            display: block;
+        }
+
+        q {
+            display: inline;
+        }
+        q::before {
+            content: open-quote;
+        }
+        q::after {
+            content: close-quote;
+        }
+
+        q.alt {
+            font-style: italic;
+        }
+        q.alt::before {
+            content: "";
+        }
+        q.alt::after {
+            content: "";
+        }
+        .x {
+            font-size: 30px;
+            color: white;
+            text-align: center;
+            background: blue;
+        }
+        .y {
+            font-size: 30px;
+            color: white;
+            text-align: center;
+            background: red;
+        }
+        .block {
+            display: inline-block;
+        }
+        .wrap::before {
+            content: open-quote;
+        }
+        .wrap::after {
+            content: close-quote;
+        }
+    </style>
+</head>
+<body>
+<h1>Study of how browsers collapse whitespace.</h1>
+
+<p>This HTML file serves as a way to demonstrate how browsers collapse whitespace,
+    in particular how whitespace is collapsed if it exists on both sides of a tag.</p>
+
+<p>Compare this file's source corresponding to the examples below to how they are
+    rendered in your browser. You can see that when the <code>&lt;q></code>
+    tag corresponds to a visual element, a quotation mark character, then any
+    whitespace on either side is separately collapsed to a single space. But if
+    <code>&lt;q></code>'s CSS is changed to simply alter the font-weight,
+    white space on both sides is treated as a single run and collapsed to a single
+    space before the tag.</p>
+
+
+
+
+<h2>How whitespace is handled differently for two different inline elements,
+<code>&lt;i></code> and <code>&lt;q></code></h2>
+
+<p>Let's compare how whitespace is recognized when it occurs only before,
+    only after, and both before and after inline tags.</p>
+
+<p>Here's the HTML source using <code>&lt;i></code>:</p>
+
+<div class="example">
+<pre><code>I said,     &lt;i>What I said.&lt;/i>&lt;br>
+I said,&lt;i>      What I said.&lt;/i>&lt;br>
+I said,    &lt;i>     What I said.&lt;/i>&lt;br>
+</code></pre>
+</div>
+
+<p>Here's the same source, but using <code>&lt;q></code> instead:</p>
+
+<div class="example">
+<pre><code>I said,     &lt;q>What I said.&lt;/q>&lt;br>
+I said,&lt;q>      What I said.&lt;/q>&lt;br>
+I said,    &lt;q>     What I said.&lt;/q>&lt;br>
+</code></pre>
+</div>
+
+<p>Now with <code>&lt;code></code>:</p>
+
+<div class="example">
+<pre><code>I said,     &lt;code>What I said.&lt;/code>&lt;br>
+I said,&lt;code>      What I said.&lt;/code>&lt;br>
+I said,    &lt;code>     What I said.&lt;/code>&lt;br>
+</code></pre>
+</div>
+
+<p>Here's how they render. First <code>&lt;i></code>:</p>
+
+<div class="example">
+    I said,     <i>What I said.</i><br>
+    I said,<i>      What I said.</i><br>
+    I said,    <i>     What I said.</i><br>
+</div>
+
+<p>Now <code>&lt;q></code></p>
+
+<div class="example">
+    I said,     <q>What I said.</q><br>
+    I said,<q>      What I said.</q><br>
+    I said,    <q>     What I said.</q><br>
+</div>
+
+<p>Now <code>&lt;code></code></p>
+
+<div class="example">
+    I said,     <code>What I said.</code><br>
+    I said,<code>      What I said.</code><br>
+    I said,    <code>     What I said.</code><br>
+</div>
+
+<p>At first glance it would appear there are different whitespace rules
+    for <code>&lt;i></code> and <code>&lt;q></code>. But in fact the
+    rules are the same:</p>
+
+<ol>
+    <li>If a tag itself (as opposed to the text it may wrap) has some sort of
+        inline visible manifestation in the rendering (e.g. the <code>"</code> of a
+        <code>&lt;q></code> tag, that manifestation is treated just like any other
+        visible piece of text on the line. Spaces serve as word breaks and are
+        rendered as spaces or line breaks. It is irrelevant if the text's source
+        is the source HTML or is inserted by CSS styling.
+    </li>
+    <li>If the whitespace is a run of consecutive whitespace (spaces, tabs
+        or newlines), it is collapsed to a single space.</li>
+    <li>If a run of whitespace spans one or more tags that do NOT have any
+        corresponding textual manifestation on the line, then only the space
+        before the first such tag is retained. (See the third <code>&lt;i></code>
+        and <code>&lt;code></code> examples above.)</li>
+</ol>
+
+
+<h2>Comparative analysis of spaces <i>before</i>, <i>after</i> and <i>between</i>
+    inline tags with different rendered manifestation</h2>
+
+This is inspired by this StackOverflow question:
+<a href='https://stackoverflow.com/questions/5078239/how-do-i-remove-the-space-between-inline-inline-block-elements'>How do I <strong>remove the space between</strong> inline/inline-block
+    elements?</a>
+
+<p>We will demonstrate the differences in how your browser handles <code>inline</code>,
+    <code>inline-block</code>, <code>block</code>, and <code>::before/after</code> wrapped,
+    elements. We will demonstrate all four using the <em>exact</em> same HTML using
+    <code>&lt;b></code> elements, but using CSS to change the display property to each of
+    these four types.</p>
+
+<p>The symbols in the result tables have the following meanings:<p>
+<ul>
+    <li><code>✔</code> there was whitespace in that position and it was maintained︎</li>
+    <li><code>✗</code> there was whitespace in that position and it removed</li>
+    <li><code>🔲</code> the elements are separated by a block boundary;
+        any whitespace text in that position is irrelevant.</li>
+</ul>
+
+
+<h3>inline whitespace behavior</h3>
+
+<p>The <code>&lt;b></code> element with its default <code>inline</code>
+display:</p>
+
+<table>
+    <colgroup>
+        <col>
+        <col span="3">
+        <col>
+    </colgroup>
+    <thead>
+        <tr>
+            <td>source</td><td>result</td><td colspan="3">space</td>
+        </tr>
+        <tr>
+            <td></td><td></td><td>before</td><td>between</td><td>after</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="code-block">&lt;b>X &lt;/b> &lt;b> X&lt;/b></td>
+            <td class="big-left">
+                <span class="alternating">
+                <b>X </b> <b> X</b>
+                </span>
+            </td>
+            <td>✔︎</td><td>✗︎</td><td>✗︎</td>
+        </tr>
+        <tr>
+            <td class="code-block">&lt;b>X&lt;/b> &lt;b> X&lt;/b></td>
+            <td class="big-left">
+                <span class="alternating">
+                <b>X</b> <b> X</b>
+                </span>
+            </td>
+            <td></td><td>✔︎</td><td>✗︎</td>
+        </tr>
+        <tr>
+            <td class="code-block">&lt;b>X&lt;/b>&lt;b> X&lt;/b></td>
+            <td class="big-left">
+                <span class="alternating">
+                <b>X</b><b> X</b>
+                </span>
+            </td>
+            <td></td><td></td><td>✔︎</td>
+        </tr>
+        <tr>
+            <td class="code-block">&lt;b>X&lt;/b>&lt;b>X&lt;/b></td>
+            <td class="big-left">
+                <span class="alternating">
+                <b>X</b><b>X</b>
+                </span>
+            </td>
+            <td></td><td></td><td></td>
+        </tr>
+    </tbody>
+</table>
+
+<p>Notice that when whitespace straddles a <code>&lt;b></code> tag,<p>
+<ul>
+    <li>it is considered a single run of contiguous whitespace,
+        because that is how it will look to the human eye when rendered.</li>
+    <li>it collapses to a single space, which will be on the left side of
+        the left-most <code>&lt;b></code> tag that is straddled.</li>
+</ul>
+
+
+<h3>inline-block whitespace behavior</h3>
+
+<p>The exact same HTML source as above, but now with CSS that converts
+    <code>&ltb></code> elements to <code>inline-block</code> display:</p>
+
+<table>
+    <colgroup>
+        <col>
+        <col span="3">
+        <col>
+    </colgroup>
+    <thead>
+        <tr>
+            <td>source</td><td>result</td><td colspan="3">space</td>
+        </tr>
+        <tr>
+            <td></td><td></td><td>before</td><td>between</td><td>after</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="code-block">&lt;b>X &lt;/b> &lt;b> X&lt;/b></td>
+            <td class="big-left">
+                <span class="alternating as-inline-block">
+                <b>X </b> <b> X</b>
+                </span>
+            </td>
+            <td>✗︎</td><td>✔︎</td><td>✗︎</td>
+        </tr>
+        <tr>
+            <td class="code-block">&lt;b>X&lt;/b> &lt;b> X&lt;/b></td>
+            <td class="big-left">
+                <span class="alternating as-inline-block">
+                <b>X</b> <b> X</b>
+                </span>
+            </td>
+            <td></td><td>✔︎</td><td>✗︎</td>
+        </tr>
+        <tr>
+            <td class="code-block">&lt;b>X&lt;/b>&lt;b> X&lt;/b></td>
+            <td class="big-left">
+                <span class="alternating as-inline-block">
+                <b>X</b><b> X</b>
+                </span>
+            </td>
+            <td></td><td></td><td>✗︎</td>
+        </tr>
+        <tr>
+            <td class="code-block">&lt;b>X&lt;/b>&lt;b>X&lt;/b></td>
+            <td class="big-left">
+                <span class="alternating as-inline-block">
+                <b>X</b><b>X</b>
+                </span>
+            </td>
+            <td></td><td></td><td></td>
+        </tr>
+    </tbody>
+</table>
+
+<p>Notice that<p>
+<ul>
+    <li>the leading and trailing spaces withing the element are removed,
+        just as they are for regular blocks.</li>
+    <li>a space or lack thereof between the elements is maintained <i>irrespective of whitespace on the other side of the tag.</i></li>
+</ul>
+
+
+<h3>wrapped inline whitespace behavior</h3>
+
+<p>The exact same HTML source as above, but now with CSS that wraps each
+    <code>&lt;b></code> element with quotes
+    using <code>::before</code> and <code>::after</code> pseudo-properties,
+    so that it renders just like a <code>&lt;q></code> element:<p>
+
+<table>
+    <colgroup>
+        <col>
+        <col span="3">
+        <col>
+    </colgroup>
+    <thead>
+        <tr>
+            <td>source</td><td>result</td><td colspan="3">space</td>
+        </tr>
+        <tr>
+            <td></td><td></td><td>before</td><td>between</td><td>after</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="code-block">&lt;b>X &lt;/b> &lt;b> X&lt;/b></td>
+            <td class="big-left">
+                <span class="alternating as-quote">
+                <b>X </b> <b> X</b>
+                </span>
+            </td>
+            <td>✔︎</td><td>✔︎</td><td>✔︎</td>
+        </tr>
+        <tr>
+            <td class="code-block">&lt;b>X&lt;/b> &lt;b> X&lt;/b></td>
+            <td class="big-left">
+                <span class="alternating as-quote">
+                <b>X</b> <b> X</b>
+                </span>
+            </td>
+            <td></td><td>✔︎</td><td>✔︎</td>
+        </tr>
+        <tr>
+            <td class="code-block">&lt;b>X&lt;/b>&lt;b> X&lt;/b></td>
+            <td class="big-left">
+                <span class="alternating as-quote">
+                <b>X</b><b> X</b>
+                </span>
+            </td>
+            <td></td><td></td><td>✔︎</td>
+        </tr>
+        <tr>
+            <td class="code-block">&lt;b>X&lt;/b>&lt;b>X&lt;/b></td>
+            <td class="big-left">
+                <span class="alternating as-quote">
+                <b>X</b><b>X</b>
+                </span>
+            </td>
+            <td></td><td></td><td></td>
+        </tr>
+    </tbody>
+</table>
+
+<p>In essence, each <code>&lt;b></code> and <code>&lt;/b></code> tag
+    is turned into a <code>"</code>, making a space or the lack thereof on either
+    side significant, just as it would be on either side of a word or
+    any other text.</p>
+
+
+<h3>block whitespace behavior</h3>
+
+<p>The exact same HTML source as above, but now with CSS that converts
+    <code>&ltb></code> elements to <code>block</code> display:</p>
+
+<table>
+    <colgroup>
+        <col>
+        <col span="3">
+        <col>
+    </colgroup>
+    <thead>
+        <tr>
+            <td>source</td><td>result</td><td colspan="3">space</td>
+        </tr>
+        <tr>
+            <td></td><td></td><td>before</td><td>between</td><td>after</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="code-block">&lt;b>X &lt;/b> &lt;b> X&lt;/b></td>
+            <td class="big-left">
+                <span class="alternating as-block">
+                <b>X </b> <b> X</b>
+                </span>
+            </td>
+            <td>✗︎</td><td>🔲</td><td>✗︎</td>
+        </tr>
+        <tr>
+            <td class="code-block">&lt;b>X&lt;/b> &lt;b> X&lt;/b></td>
+            <td class="big-left">
+                <span class="alternating as-block">
+                <b>X</b> <b> X</b>
+                </span>
+            </td>
+            <td></td><td>🔲</td><td>✗︎</td>
+        </tr>
+        <tr>
+            <td class="code-block">&lt;b>X&lt;/b>&lt;b> X&lt;/b></td>
+            <td class="big-left">
+                <span class="alternating as-block">
+                <b>X</b><b> X</b>
+                </span>
+            </td>
+            <td></td><td>🔲</td><td>✗︎</td>
+        </tr>
+        <tr>
+            <td class="code-block">&lt;b>X&lt;/b>&lt;b>X&lt;/b></td>
+            <td class="big-left">
+                <span class="alternating as-block">
+                <b>X</b><b>X</b>
+                </span>
+            </td>
+            <td></td><td>🔲</td><td></td>
+        </tr>
+    </tbody>
+</table>
+
+<p> </p>
+
+<p>As you can see,<p>
+<ul>
+    <li>any whitespace characters between the <code>&ltb></code> elements
+        are insignificant as they are rendered as separate blocks.</li>
+    <li>leading and trailing whitespace within the blocks are removed.</li>
+</ul>
+
+
+<h2>Conclusion</h2>
+
+Since we can&#39;t know ahead of time what the CSS for an element might be, the
+safest thing to do is to assume the tag might manifest as a visual character,
+in which case whitespace collapsing should happen independently on either side
+of the tag, leaving it to the browser to make the final determination at render
+time. (Note, this appears to be what Webkit does internally. Use the developer
+tools to examine the DOM for these examples.)
+
+

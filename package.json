@@ -31,14 +31,16 @@
         "README.md",
         "LICENSE",
         "CHANGELOG.md",
-        "lib",
-        "src",
+        "lib/htmlnorm.*",
+        "lib/util.*",
+        "src/*.ts",
         "cli.js",
         "!**/*.tsbuildinfo"
     ],
 
     "scripts": {
         "build": "tsc -p src",
+        "prepare": "npm run build",
         "pretest": "npm run build && npm run lint",
         "test": "npx mocha",
         "lint": "npx eslint .",
@@ -50,24 +52,27 @@
     },
 
     "dependencies": {
-        "htmlparser2": "^7.1.2"
+        "htmlparser2": "^7.2.0"
     },
     "devDependencies": {
         "@istanbuljs/esm-loader-hook": "^0.1.2",
-        "@types/chai": "^4.2.22",
-        "@types/mocha": "^9.0.0",
-        "@typescript-eslint/eslint-plugin": "^4.31.2",
-        "@typescript-eslint/parser": "^4.31.2",
-        "c8": "^7.9.0",
-        "chai": "^4.3.4",
-        "eslint": "^7.32.0",
+        "@types/chai": "^4.3.0",
+        "@types/commonmark": "^0.27.5",
+        "@types/mocha": "^9.1.0",
+        "@types/node": "^17.0.15",
+        "@typescript-eslint/eslint-plugin": "^5.10.2",
+        "@typescript-eslint/parser": "^5.10.2",
+        "c8": "^7.11.0",
+        "chai": "^4.3.6",
+        "commonmark": "^0.30.0",
+        "eslint": "^8.8.0",
         "eslint-plugin-babel": "^5.3.1",
-        "eslint-plugin-import": "^2.24.2",
-        "mocha": "^9.1.2",
+        "eslint-plugin-import": "^2.25.4",
+        "mocha": "^9.2.0",
         "mocha-suppress-logs": "^0.3.1",
         "nyc": "^15.1.0",
-        "source-map-support": "^0.5.20",
-        "typescript": "^4.4.3"
+        "source-map-support": "^0.5.21",
+        "typescript": "^4.5.5"
     },
     "engines": {
         "node": "^12.20.0 || ^14.13.1 || >=16.0.0"

@@ -18,10 +18,11 @@
 > - attributes and classes alphabetized
 > - self-closing tags, void elements, quotation marks, escaped text and more normalized
 > - lines intelligently reflowed and indented for readability
+> - optional *conservative mode* that assumes CSS might change the layout semantics of most anything.
 > - [tag soup](https://en.wikipedia.org/wiki/Tag_soup) left as-is, not auto-fixed
-> 
+>
 > which enables:
-> 
+>
 > - program output and test case [format independence](#format-independence)
 > - readable tests
 > - [clean and succinct diffs](#clean-succinct-semantic-diffs) on test failures
@@ -142,6 +143,8 @@ See also *[Why semantic comparison is needed for stable tests](https://bunit.dev
 
 ## normalization is more than pretty printing
 
+Many pretty printers basically make adjustments to the source HTML, removing whitespace here, adding newlines and spaces there. There is no guarantee that two semantically equivalent strings of HTML will be identical after pretty-printing.
+
 `htmlnorm` fully parses the HTML parser and rewrites it from scratch. 
 In the process it mimics browser logic for collapsing whitespace and performs
 all the other normalizations [listed above](#what-and-how).
@@ -181,8 +184,7 @@ One browser behavior that `htmlnorm` does not mimic is
 [tag soup parsing](https://en.wikipedia.org/wiki/Tag_soup). Doing so would hide 
 test failures. `htmlnorm` leaves malformed HTML as-is.
 
-For a comprehensive illustration of everything `htmlnorm` does, [check out its
-test cases](src/htmlnorm.test.js).
+For a comprehensive explanation and illustration of everything `htmlnorm` does, [TODO, link to DOCS.md]
 
 <br>
 
@@ -216,10 +218,24 @@ later releases if there is enough demand. For example:
 - Control over which kinds of differences are considered significant. 
   For example, some tests may care whether a character was escaped, even if the
   HTML spec didn't require it.
+- support option to not close tags? (right now we just error out.) See https://html.spec.whatwg.org/#syntax-tag-omission
+
 
 There are also some good ideas worth adopting from [other libraries](#other-libraries-i-tried-first).  
 
 <br>
+
+## Quick turn-around on bug reports and feature requests
+
+This is [extensively tested](), but it is still the v0.1. If something doesn't work as you expect/want, instead of just walking away, please [submit an issue](). I promise a quick turn-around:
+
+- bugs will be fixed pronto,
+- feature that aligned with the goals of `htmlnorm` and otherwise make sense will be put on the roadmap. In any case I will respond to your request with an honest answer.
+- requests that I don't think fit will get an quick and honest reply explaining why.
+
+it's easy to make a request, just format your request like the test cases: an example input and your expected output.
+
+
 
 ##  🌈 Suggestions and pull requests welcome!
 
@@ -233,10 +249,28 @@ I hunted high and low, though no doubt missed a possibly excellent library out t
 
 | library                                                      | strategy                                 | why it didn't work for me                                    |
 | ------------------------------------------------------------ | ---------------------------------------- | ------------------------------------------------------------ |
-| [prettydiff](https://github.com/prettydiff/prettydiff#readme) | semantic diff?                           | Is a rather large library supporting a large number of languages (code as well as markup), and using a complex parser (sparse). I hesitate to use something so large. <br /><br />See [prior README](https://github.com/prettydiff/prettydiff/blob/0d5b434434f13377f80470924fb36d9ebb0b0233/readme.md). See MY TODO.md notes.<br /><br />Seems to do whitespace collapsing correctly!<br /><br />CC0 Creative Commons license. |
+| [prettydiff](https://github.com/prettydiff/prettydiff#readme) | semantic diff?                           | Is a rather large library supporting a large number of languages (code as well as markup), and using a complex parser (sparse). I hesitate to use something so large. <br><br>See [prior README](https://github.com/prettydiff/prettydiff/blob/0d5b434434f13377f80470924fb36d9ebb0b0233/readme.md). See MY TODO.md notes.<br><br>Seems to do whitespace collapsing correctly!<br><br>CC0 Creative Commons license. |
 | Open Web Components *[Semantic Dom Diff](https://open-wc.org/docs/testing/semantic-dom-diff/)* | semantic diff                            | This is appears to be a very powerful tool! It does a lot of good things, including things I would like to add to future versions of `htmlnorm`. But it removes more than whitespace with no way to disable that. |
 | [AngleSharp.Diffing](https://github.com/AngleSharp/AngleSharp.Diffing#readme) | semantic diff                            | Another powerful library, but it's written in C#. I has [a lot of configuration options](https://github.com/AngleSharp/AngleSharp.Diffing/wiki/Diffing-Options), including control for how whitespace is handled, but since it's C# I wasn't able to test whether it does properly. |
 | [js-beautify](https://github.com/beautify-web/js-beautify#readme) | pretty-print                             | only does simplistic collapsing of whitespace runs into a single space. Can try it online: https://beautifier.io |
 | [pretty](https://github.com/jonschlinkert/pretty#readme)     | pretty-print                             | just a customization of `js-beautify`, same issues           |
-| [diffable-html](https://github.com/algolia/diffable-html#readme) | "opinionated formatter" focused on diffs | *"Be aware that this plugin is intended for making HTML diffs more readable. We took the compromise of not dealing with white-spaces like the browsers do."* |
+| [diffable-html](https://github.com/algolia/diffable-html#readme) | "opinionated formatter" focused on diffs | *"Be aware that this plugin is intended for making HTML diffs more readable. We took the compromise of not dealing with white-spaces like the browsers do."*<br><br>adds whitespace between inline elements where there was none, materially changing  <br><br>it doesn't sort attribs or classes. prob more diffs. |
+
+### Behavior/feature comparison 
+
+>  # 🟧 todo: complete this table
+
+
+|                                      | htmlnorm | [diffable-html](https://github.com/algolia/diffable-html#readme) | [prettydiff](https://github.com/prettydiff/prettydiff#readme) | [Semantic Dom Diff](https://open-wc.org/docs/testing/semantic-dom-diff/) | [js-beautify](https://github.com/beautify-web/js-beautify#readme) |
+| ------------------------------------ | -------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| sort attribs                         | ✅        | ❌                                                            |                                                              |                                                              |                                                              |
+| sort classes                         | ✅        | ❌                                                            |                                                              |                                                              |                                                              |
+| properly preserves inline whitespace | ✅        | ❌[^1]                                                        | ✅ (need to confirm)                                          |                                                              |                                                              |
+| Conservative mode                    | ✅        | ❌                                                            |                                                              |                                                              |                                                              |
+|                                      |          |                                                              |                                                              |                                                              |                                                              |
+| small, focused library               | ✅        |                                                              | ❌                                                            |                                                              |                                                              |
+
+
+
+[^1]: diffable-html adds leading and trailing whitespace to inline elements in order to display their text content on separate lines. This is NOT a semantics preserving transformation.
 
