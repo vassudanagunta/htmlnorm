@@ -3521,3 +3521,46 @@ was meant to go with→
 </p>
 ``````````````````````````````````````````````````
 
+
+
+
+## content modifications
+
+### attribute exclusion
+
+#### [CASE] excludes attributes in targeted element
+The test configuration of htmlnorm excludes `exclude` and `itemscope` attributes
+on `input` elements.
+
+[IN]
+``````````````````````````````````````````````````
+<input type="checkbox" exclude="x" id="cats" class="setting" checked itemscope> Cats?
+``````````````````````````````````````````````````
+[OUT]
+``````````````````````````````````````````````````
+<input checked class="setting" id="cats" type="checkbox"> Cats?
+``````````````````````````````````````````````````
+
+#### [CASE] does not change other elements
+
+[IN]
+``````````````````````````````````````````````````
+<area type="checkbox" exclude="x" id="cats" class="setting" checked itemscope> Cats?
+``````````````````````````````````````````````````
+[OUT]
+``````````````````````````````````````````````````
+<area checked class="setting" exclude="x" id="cats" itemscope type="checkbox"> Cats?
+``````````````````````````````````````````````````
+
+
+### replaced attribute values
+
+[//]: # (todo add support)
+
+### excluded tags
+
+[//]: # (todo add support)
+
+### replaced tag content
+
+[//]: # (todo add support)

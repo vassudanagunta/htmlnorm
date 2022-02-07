@@ -13,11 +13,15 @@ export type OPTIONS = {
 
     /** how closing tags are normalized */
     closing_tags: 'as-is' | 'explicit' | 'html5 implicit' | 'strict'
+
+    /** for any tag, the set of attributes that should be excluded */
+    attributeExcludes: Map<string, Set<string>>
 }
 
 const DEFAULTS: OPTIONS = {
     white_space: 'standard',
-    closing_tags: 'as-is'
+    closing_tags: 'as-is',
+    attributeExcludes: new Map<string, Set<string>>()
 }
 
 const eofWS = /[\t\n\f\r ]$/
@@ -62,6 +66,7 @@ export default function htmlnorm (src: string, options?: Partial<OPTIONS>): stri
 function initHandler (options: OPTIONS): { handler: Partial<Handler>; readResult: () => string } {
     const conservativeWS = options.white_space === 'conservative'
     const explicitClose = options.closing_tags === 'explicit'
+    const attributeExcludes = options.attributeExcludes
 
     let out = ''
 
@@ -278,7 +283,9 @@ function initHandler (options: OPTIONS): { handler: Partial<Handler>; readResult
                 throw new Error(`[htmlnorm] malformed html: closing ${name} tag did not have matching open tag`)
             }
 
-            const a = Object.entries(attribs).sort(([a], [b]) => {
+            const a = Object.entries(attribs).filter((attr) => {
+                return !attributeExcludes.get(name)?.has(attr[0])
+            }).sort(([a], [b]) => {
                 /* The arguments are lowercase */
                 if (a < b) return -1
                 if (a > b) return 1

@@ -20,13 +20,18 @@ const {strictEqual, isNull, isUndefined} = assert
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const testSet = extractTestSet(path.join(__dirname, 'htmlnorm.test.md'))
 
+// the are applied to all variations
+const attributeExcludes= new Map()
+attributeExcludes.set('input', new Set(['exclude', 'itemscope']))
+
+
 // using separate testBlackBoxVariation calls so that in the IDE I can
 //  selectively test only one variation
 
 suite('htmlnorm STANDARD', function () {
     testBlackBoxVariation(
         {
-            blackBox: htmlnorm,
+            blackBox: (s) => htmlnorm(s, { attributeExcludes: attributeExcludes }),
             variation_spec: ['STANDARD']
         },
         testSet)
@@ -35,7 +40,7 @@ suite('htmlnorm STANDARD', function () {
 suite('htmlnorm CONSERVATIVE', function () {
     testBlackBoxVariation(
         {
-            blackBox: (s) => htmlnorm(s, { white_space: 'conservative' }),
+            blackBox: (s) => htmlnorm(s, { white_space: 'conservative', attributeExcludes: attributeExcludes }),
             variation_spec: ['CONSERVATIVE']
         },
         testSet)
@@ -44,7 +49,7 @@ suite('htmlnorm CONSERVATIVE', function () {
 suite('htmlnorm EXPLICIT_CLOSE', function () {
     testBlackBoxVariation(
         {
-            blackBox: (s) => htmlnorm(s, { closing_tags: 'explicit' }),
+            blackBox: (s) => htmlnorm(s, { closing_tags: 'explicit', attributeExcludes: attributeExcludes }),
             variation_spec: ['EXPLICIT_CLOSE']
         },
         testSet)
@@ -53,7 +58,7 @@ suite('htmlnorm EXPLICIT_CLOSE', function () {
 suite('htmlnorm EXPLICIT_CLOSE + CONSERVATIVE', function () {
     testBlackBoxVariation(
         {
-            blackBox: (s) => htmlnorm(s, { closing_tags: 'explicit', white_space: 'conservative' }),
+            blackBox: (s) => htmlnorm(s, { closing_tags: 'explicit', white_space: 'conservative', attributeExcludes: attributeExcludes }),
             variation_spec: ['EXPLICIT_CLOSE', 'CONSERVATIVE']
         },
         testSet)
