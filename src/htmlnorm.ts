@@ -1,7 +1,7 @@
 'use strict'
 
 import {Parser, Handler} from 'htmlparser2/lib/Parser.js'
-import {escapeForHTML} from './util.js'
+import {escapeForHTML, normalizeStyle} from './util.js'
 
 const INDENT = '  '
 
@@ -296,6 +296,8 @@ function initHandler (options: OPTIONS): { handler: Partial<Handler>; readResult
                 }
                 if (name === 'class') {
                     value = value.trim().split(/[\t\n\f\r ]+/g).sort().join(' ')
+                } else if (name === 'style') {
+                    value = normalizeStyle(value)
                 }
                 if (value.indexOf('"') >= 0) {
                     if (value.indexOf('\'') === -1) {

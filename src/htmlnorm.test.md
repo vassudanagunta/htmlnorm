@@ -183,6 +183,16 @@ h2>
 <button id="123">Don't Panic Button</button>
 ``````````````````````````````````````````````````
 
+#### [CASE] normalize style declarations syntax
+[IN]
+``````````````````````````````````````````````````
+<td style=" border:   1px solid   black ;text-align:center;">yes</td>
+``````````````````````````````````````````````````
+[OUT]
+``````````````````````````````````````````````````
+<td style="border: 1px solid   black; text-align: center">yes</td>
+``````````````````````````````````````````````````
+
 
 ### booleans
 
@@ -247,6 +257,16 @@ h2>
 [OUT]
 ``````````````````````````````````````````````````
 <h2 class="optional subtitle x-ray">heading</h2>
+``````````````````````````````````````````````````
+
+#### [CASE] sort style declarations
+[IN]
+``````````````````````````````````````````````````
+<p style="font-style: italic; font-size: 24px; color: indigo">hey.</p>
+``````````````````````````````````````````````````
+[OUT]
+``````````````````````````````````````````````````
+<p style="color: indigo; font-size: 24px; font-style: italic">hey.</p>
 ``````````````````````````````````````````````````
 
 

@@ -65,6 +65,10 @@ TEST EACH of the alternate libraries in the table against html-examples.html
 - [ ] Merge or link to `DOCS.md`
 - [ ] 🚩 Include more kinds of normalization in example, e.g. attributes, escaping...
 - [ ] 🚩 use the same base example throughout.
+- [ ] Make sure all the implemented features are listed somewhere
+   - [ ] scour the test cases for notable features and behaviors
+         Even if the test case file *is* to be the detailed doc of behavior, we
+         need a quick to read summary somewhere.
 - [ ] Claim complete HTML support:
   - [x] **EITHER**: Implement handling of all HTML elements e.g. (`html`, `head`, etc)
 

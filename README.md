@@ -15,9 +15,10 @@
 > Semantics-preserving and semantics-determined reformatting:
 >
 > - whitespace collapsed, [making no assumptions about CSS styling](https://stackoverflow.com/questions/12863588/when-does-whitespace-matter-in-html)
-> - attributes and classes alphabetized
+> - attributes, class values and inline style declarations sorted
 > - self-closing tags, void elements, quotation marks, escaped text and more normalized
 > - lines intelligently reflowed and indented for readability
+> - declare tags, attributes to be ignored, or normalized with regex
 > - optional *conservative mode* that assumes CSS might change the layout semantics of most anything.
 > - [tag soup](https://en.wikipedia.org/wiki/Tag_soup) left as-is, not auto-fixed
 >
