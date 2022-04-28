@@ -15,13 +15,13 @@ export type OPTIONS = {
     closing_tags: 'as-is' | 'explicit' | 'html5 implicit' | 'strict'
 
     /** for any tag, the set of attributes that should be excluded */
-    attributeExcludes: Map<string, Set<string>>
+    attributeExcludes: Record<string, string[]>
 }
 
 const DEFAULTS: OPTIONS = {
     white_space: 'standard',
     closing_tags: 'as-is',
-    attributeExcludes: new Map<string, Set<string>>()
+    attributeExcludes: {}
 }
 
 const eofWS = /[\t\n\f\r ]$/
@@ -66,7 +66,13 @@ export default function htmlnorm (src: string, options?: Partial<OPTIONS>): stri
 function initHandler (options: OPTIONS): { handler: Partial<Handler>; readResult: () => string } {
     const conservativeWS = options.white_space === 'conservative'
     const explicitClose = options.closing_tags === 'explicit'
-    const attributeExcludes = options.attributeExcludes
+    const attributeExcludes = Object.entries(options.attributeExcludes).reduce(
+        (m,
+         e: [string, string[]]) => {
+            m.set(e[0], new Set(e[1]))
+            return m
+        }, new Map<string, Set<string>>()
+    )
 
     let out = ''
 
@@ -319,7 +325,7 @@ function initHandler (options: OPTIONS): { handler: Partial<Handler>; readResult
                 }
             } else if (name === 'pre') {
                 popInline(true, true)
-                if ((!conservativeWS || trailingWS || hardLineBreak) && out.length !== 0 ) {
+                if ((!conservativeWS || trailingWS || hardLineBreak) && out.length !== 0) {
                     out += '\n'
                 }
                 out += s
@@ -489,7 +495,7 @@ function initHandler (options: OPTIONS): { handler: Partial<Handler>; readResult
         onend (): void {
             // console.log(`END`)
             popInline(true, true)
-        },
+        }
 
         // onreset (): void {
         //     console.log(`RESET`)

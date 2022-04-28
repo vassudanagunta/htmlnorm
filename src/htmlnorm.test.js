@@ -21,8 +21,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const testSet = extractTestSet(path.join(__dirname, 'htmlnorm.test.md'))
 
 // the are applied to all variations
-const attributeExcludes= new Map()
-attributeExcludes.set('input', new Set(['exclude', 'itemscope']))
+const attributeExcludes = {
+    input: ['exclude', 'itemscope']
+}
 
 
 // using separate testBlackBoxVariation calls so that in the IDE I can
